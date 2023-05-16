@@ -9,6 +9,7 @@ const Demo = () => {
   });
 
   const [allArticles, setAllArticles] = useState([]);
+  const [copied, setCopied] = useState('');
 
   const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery();
 
@@ -38,6 +39,18 @@ const Demo = () => {
     }
   };
 
+  const handleCopy = (copyUrl) => {
+    setCopied(copyUrl);
+    navigator.clipboard.writeText(copyUrl);
+    setTimeout(() => setCopied(false), 3000);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.keyCode === 13) {
+      handleSubmit(e);
+    }
+  };
+
   return (
     <section className="mt-16 w-full max-w-xl">
       {/* Search */}
@@ -48,7 +61,7 @@ const Demo = () => {
         >
           <img
             src={linkIcon}
-            alt="link_icon"
+            alt="link-icon"
             className="absolute left-0 my-2 ml-3 w-5"
           />
           <input
@@ -56,8 +69,9 @@ const Demo = () => {
             placeholder="Enter a URL"
             value={article.url}
             onChange={(e) => setArticle({ ...article, url: e.target.value })}
+            onKeyDown={handleKeyDown}
             required
-            className="url_input peer"
+            className="url_input peer flex-grow-0"
           />
           <button
             type="submit"
@@ -75,10 +89,10 @@ const Demo = () => {
               onClick={() => setArticle(item)}
               className="link_card"
             >
-              <div className="copy_btn">
+              <div className="copy_btn" onClick={() => handleCopy(item.url)}>
                 <img
-                  src={copy}
-                  alt="copy_icon"
+                  src={copied === item.url ? tick : copy}
+                  alt={copied === item.url ? 'tick_icon' : 'copy_icon'}
                   className="w-[40%] h-[40%] object-contain"
                 />
               </div>
